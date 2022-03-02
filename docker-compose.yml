@@ -48,6 +48,7 @@ services:
     - myweb
     volumes:
     - conf-apache:/etc/apache2/
+    - log-apache:/var/log/apache2
     - www-data:/var/www/html
     depends_on:
     - "db"
@@ -74,6 +75,13 @@ volumes:
       type: 'none'
       o: 'bind'
       device: './conf/php-fpm'
+
+  log-apache:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './log/apache'
 
   www-data:
     driver: local
