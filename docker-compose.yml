@@ -47,7 +47,7 @@ services:
     networks:
     - myweb
     volumes:
-    - conf-apache:/etc/apache2/
+    - conf-apache-sites:/etc/apache2/sites-available
     - log-apache:/var/log/apache2
     - www-data:/var/www/html
     depends_on:
@@ -55,12 +55,12 @@ services:
     - "php"
 
 volumes:
-  conf-apache:
+  conf-apache-sites:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './conf/apache'
+      device: './conf/apache/sites-available'
 
   conf-php:
     driver: local
