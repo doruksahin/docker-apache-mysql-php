@@ -16,6 +16,7 @@ services:
   php:
     image: php:7-fpm
     container_name: php
+    restart: unless-stopped
     networks:
     - myweb
     volumes:
