@@ -2,7 +2,6 @@ version: "3.9"
 services:
   db:
     image: mariadb
-    container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: test
       MYSQL_DATABASE: myweb
@@ -15,7 +14,6 @@ services:
     restart: unless-stopped
   php:
     image: php:7-fpm
-    container_name: php
     restart: unless-stopped
     networks:
     - myweb
@@ -32,7 +30,6 @@ services:
         php-fpm
   apache:
     image: ubuntu/apache2:2.4-20.04_beta
-    container_name: apache
     ports:
     - 80:80
     - 443:443
