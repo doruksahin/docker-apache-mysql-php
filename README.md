@@ -17,4 +17,5 @@ You can simply start the services with the `docker-compose up` command. It's sug
   - `php-fpm`: The stack uses PHP-FPM, which can run multiple PHP instanced in pools. You can configure them here.
 - `db`: Permanent storage for the MariaDB server
 - `html`: The served files go there directly.
+- `images`: Directory to store custom Docker images for the project.
 - `log`: You can find there all the log files from the different containers.
