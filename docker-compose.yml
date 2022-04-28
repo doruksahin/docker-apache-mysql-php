@@ -13,21 +13,22 @@ services:
     - ./db:/var/lib/mysql
     restart: unless-stopped
   php:
-    image: php:7-fpm
+    build: ./images/php-7fpm
+    image: hahnrobi/php7-fpm
     restart: unless-stopped
     networks:
     - myweb
-    volumes:
-    - conf-php:/usr/local/etc/php
-    - conf-php-fpm:/usr/local/etc/php-fpm.d
-    - www-data:/var/www/html
     command:
     - /bin/sh
     - -c
     - |
-        docker-php-ext-install mysqli 
+        docker-php-ext-enable curl exif gd iconv intl json mysqli opcache zip
         echo "Extension installed. Starting php-fpm."
         php-fpm
+    volumes:
+    - conf-php:/usr/local/etc/php
+    - conf-php-fpm:/usr/local/etc/php-fpm.d
+    - www-data:/var/www/html
   apache:
     image: ubuntu/apache2:2.4-20.04_beta
     ports:
@@ -38,6 +39,17 @@ services:
     - /bin/sh
     - -c
     - |
+        a2enmod rewrite expires
+        a2enmod remoteip; \
+        { \
+        echo 'RemoteIPHeader X-Forwarded-For'; \
+        echo 'RemoteIPTrustedProxy 10.0.0.0/8'; \
+        echo 'RemoteIPTrustedProxy 172.16.0.0/12'; \
+        echo 'RemoteIPTrustedProxy 192.168.0.0/16'; \
+        echo 'RemoteIPTrustedProxy 169.254.0.0/16'; \
+        echo 'RemoteIPTrustedProxy 127.0.0.0/8'; \
+        } > /etc/apache2/conf-available/remoteip.conf; \
+        a2enconf remoteip; \
         a2enmod proxy
         a2enmod proxy_fcgi
         a2ensite 000-default
