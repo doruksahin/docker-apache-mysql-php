@@ -1,20 +1,21 @@
 version: "3.9"
 services:
   db:
-    image: mariadb
+    image: mysql
+    ports: 
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: test
-      MYSQL_DATABASE: myweb
-      MYSQL_USER: myweb
-      MYSQL_PASSWORD: verystrongpassword
-    networks:
-    - myweb
+        MYSQL_DATABASE: myDb
+        MYSQL_USER: user
+        MYSQL_PASSWORD: test
+        MYSQL_ROOT_PASSWORD: test
     volumes:
-    - ./db:/var/lib/mysql
-    restart: unless-stopped
+        - ./dump:/docker-entrypoint-initdb.d
+        - persistent:/var/lib/mysql
+    networks:
+        - default
   php:
-    build: ./images/php-7fpm
-    image: hahnrobi/php7-fpm
+    build: ./images/php-7.4.0fpm
     restart: unless-stopped
     networks:
     - myweb
@@ -32,7 +33,7 @@ services:
   apache:
     image: ubuntu/apache2:2.4-20.04_beta
     ports:
-    - 80:80
+    - 3002:80
     - 443:443
     restart: unless-stopped
     command:
@@ -99,6 +100,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: './html'
-
+  persistent:
 networks:
   myweb:
