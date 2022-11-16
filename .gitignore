@@ -1,3 +1,4 @@
 html/*
 !html/index.html
 db/*
+log/*
