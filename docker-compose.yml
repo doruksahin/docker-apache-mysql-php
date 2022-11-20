@@ -1,35 +1,34 @@
 version: "3.9"
 services:
-  db:
-    image: mysql
-    ports: 
-      - "3306:3306"
+  mariadb:
+    image: mariadb:latest
     environment:
-        MYSQL_DATABASE: myDb
-        MYSQL_USER: user
-        MYSQL_PASSWORD: test
-        MYSQL_ROOT_PASSWORD: test
-    volumes:
-        - ./dump:/docker-entrypoint-initdb.d
-        - persistent:/var/lib/mysql
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    logging:
+      driver: syslog
+      options:
+        tag: "{{.DaemonName}}(image={{.ImageName}};name={{.Name}};id={{.ID}})"
     networks:
-        - default
+      - myweb
+    restart: on-failure
+    volumes:
+     - ${PWD}/mariadb:/var/lib/mysql
+    ports:
+      - "3306:3306" 
   php:
-    build: ./images/php-7.4.0fpm
+    build: ../Sharper_API
     restart: unless-stopped
     networks:
     - myweb
-    command:
-    - /bin/sh
-    - -c
-    - |
-        docker-php-ext-enable curl exif gd iconv intl json mysqli opcache zip
-        echo "Extension installed. Starting php-fpm."
-        php-fpm
     volumes:
     - conf-php:/usr/local/etc/php
     - conf-php-fpm:/usr/local/etc/php-fpm.d
     - www-data:/var/www/html
+    ports:
+      - "8000:8000"
   apache:
     image: ubuntu/apache2:2.4-20.04_beta
     ports:
@@ -62,7 +61,7 @@ services:
     - log-apache:/var/log/apache2
     - www-data:/var/www/html
     depends_on:
-    - "db"
+    - "mariadb"
     - "php"
 
 volumes:
